@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>noggin Soup's Project</title>
+</head>
+
+<body>
+<canvas id="myCanvas" width="1200" height="720"><p>Your browser does not support HTML5!</p></canvas> 
+<script type="text/javascript">
+	var canvas = document.getElementById("myCanvas");
+	var context = canvas.getContext("2d");
+	
+	var width = canvas.getAttribute('width');
+	var height = canvas.getAttribute('height');
+	
+	var mouseX;
+	var mouseY;
+	
+	var bgImage = new Image();
+	var logoImage = new Image();
+	var selectionIconImage = new Image();
+
+	var backgroundY = 0;
+	
+	var buttonX = [532,530,540,547, 500];
+	var buttonY = [255,318,377,440, 530];
+	var buttonWidth = [135,140,118,103, 200];
+	var buttonHeight = [30,30,30,30, 45];
+
+	var creditBackButtonX = 1010;
+	var creditBackButtonY = 645;
+	var creditBackButtonWidth = 120;
+	var creditBackButtonHeight = 45;
+	
+	var selectionIconX = [0,0];
+	var selectionIconY = [0,0];
+	var selectionIconWidth = 24;
+	var selectionIconHeight = 36;
+	
+	var selectionIconVisible = false;
+	var selectionIconSize = selectionIconWidth;
+	var selectionIconRotate = 0;
+	
+	var frames = 30;
+    var timerId = 0;
+	var fadeId = 0;
+	var time = 0.0;
+	var inCreditsScreen = false;
+
+	selectionIconImage.src = "Images/Selection Icon.png";
+	bgImage.onload = function(){
+		context.drawImage(bgImage, 0, backgroundY);
+	};
+	bgImage.src = "Images/Splash Screen 720.png";
+
+	logoImage.onload = function(){
+		context.drawImage(logoImage, 50, -10);
+	}	
+	
+	setTimeout(showMainMenu, 1500);
+
+	function showMainMenu() {
+		inCreditsScreen = false;
+		bgImage.src = "Images/Main Menu 720.png";
+		timerId = setInterval("update()", 1000/frames);
+		canvas.addEventListener("mousemove", checkPos);
+		canvas.addEventListener("mouseup", checkClick);
+	}
+	
+	function update() {
+		clear();
+		move();
+		draw();
+	}
+	function clear() {
+		context.clearRect(0, 0, width, height);
+	}
+	function move(){
+		if(selectionIconSize == selectionIconWidth){
+			selectionIconRotate = -1;
+		}
+		if(selectionIconSize == 0){
+			selectionIconRotate = 1;
+		}
+		selectionIconSize += selectionIconRotate;
+	}
+
+	function draw(){
+		context.drawImage(bgImage, 0, backgroundY);
+		if(selectionIconVisible == true){
+			context.drawImage(selectionIconImage, selectionIconX[0] - (selectionIconSize/2), selectionIconY[0], selectionIconSize, selectionIconHeight);
+			context.drawImage(selectionIconImage, selectionIconX[1] - (selectionIconSize/2), selectionIconY[1], selectionIconSize, selectionIconHeight);
+		}
+	}
+
+	function checkPos(mouseEvent){
+		if(mouseEvent.pageX || mouseEvent.pageY == 0){
+			mouseX = mouseEvent.pageX - this.offsetLeft;
+			mouseY = mouseEvent.pageY - this.offsetTop;
+		}else if(mouseEvent.offsetX || mouseEvent.offsetY == 0){
+			mouseX = mouseEvent.offsetX;
+			mouseY = mouseEvent.offsetY;
+		}
+		if (!inCreditsScreen) {
+			checkPosMainMenu();
+		} else {
+			checkPosCreditsScreen();
+		}
+	}
+
+	function checkPosMainMenu() {
+		for(i = 0; i < buttonX.length; i++){
+			if(mouseX > buttonX[i] && mouseX < buttonX[i] + buttonWidth[i]){
+				if(mouseY > buttonY[i] && mouseY < buttonY[i] + buttonHeight[i]){
+					selectionIconVisible = true;
+					selectionIconX[0] = buttonX[i] - (selectionIconWidth/2) - 2;
+					selectionIconY[0] = buttonY[i] + 2;
+					selectionIconX[1] = buttonX[i] + buttonWidth[i] + (selectionIconWidth/2); 
+					selectionIconY[1] = buttonY[i] + 2;
+				}
+			}else{
+				selectionIconVisible = false;
+			}
+		}
+	}
+
+	function checkPosCreditsScreen() {
+		if(mouseX > creditBackButtonX && mouseX < creditBackButtonX + creditBackButtonWidth){
+				if(mouseY > creditBackButtonY && mouseY < creditBackButtonY + creditBackButtonHeight){
+					selectionIconVisible = true;
+					selectionIconX[0] = creditBackButtonX - (selectionIconWidth/2) - 2;
+					selectionIconY[0] = creditBackButtonY + 2;
+					selectionIconX[1] = creditBackButtonX + creditBackButtonWidth + (selectionIconWidth/2); 
+					selectionIconY[1] = creditBackButtonY + 2;
+				}
+			}else{
+				selectionIconVisible = false;
+			}
+	}
+
+	function checkClick(mouseEvent){
+		for(i = 0; i < buttonX.length; i++){
+			if(mouseX > buttonX[i] && mouseX < buttonX[i] + buttonWidth[i]){
+				if(mouseY > buttonY[i] && mouseY < buttonY[i] + buttonHeight[i]){
+					selectionIconVisible = false;
+					fadeId = setInterval("fadeOut()", 1000/frames);
+					clearInterval(timerId);
+					canvas.removeEventListener("mousemove", checkPos);
+					canvas.removeEventListener("mouseup", checkClick);
+					switch (i) {
+			case 0:
+				break;
+			case 1:
+				break;
+			case 2:
+				break;
+			case 3:
+				setTimeout(enterCreditsScreen, 1000); break;
+			default:
+				break;
+		}
+				}
+			}
+		}
+	}
+
+	function checkClickCreditsScreen(mouseEvent) {
+		if(mouseX > creditBackButtonX && mouseX < creditBackButtonX + creditBackButtonWidth){
+			if(mouseY > creditBackButtonY && mouseY < creditBackButtonY + creditBackButtonHeight){
+				selectionIconVisible = false;
+				fadeId = setInterval("fadeOut()", 1000/frames);
+				clearInterval(timerId);
+				canvas.removeEventListener("mousemove", checkPos);
+				canvas.removeEventListener("mouseup", checkClick);
+				setTimeout(showMainMenu, 1000);
+			}	
+		}
+	}
+
+	function fadeOut(){
+		context.fillStyle = "rgba(0,0,0, 0.2)";
+		context.fillRect (0, 0, width, height);
+		time += 0.1;
+		if(time >= 1.5){
+			clearInterval(fadeId);
+			time = 0;
+		}
+	}
+
+	function enterCreditsScreen() {
+		clearInterval(fadeId);
+		inCreditsScreen = true;
+		bgImage.src = "Images/Credits Screen 720.png";
+		timerId = setInterval("update()", 1000/frames);
+		canvas.addEventListener("mousemove", checkPos);
+		canvas.addEventListener("mouseup", checkClickCreditsScreen);
+	}
+</script> 
+</body>
+
+</html> 
