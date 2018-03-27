@@ -45,6 +45,7 @@
     var timerId = 0;
 	var fadeId = 0;
 	var time = 0.0;
+	var inSettingsScreen = false;
 	var inCreditsScreen = false;
 
 	selectionIconImage.src = "Images/Selection Icon.png";
@@ -60,6 +61,7 @@
 	setTimeout(showMainMenu, 1500);
 
 	function showMainMenu() {
+		inSettingsScreen = false;
 		inCreditsScreen = false;
 		bgImage.src = "Images/Main Menu 720.png";
 		timerId = setInterval("update()", 1000/frames);
@@ -101,6 +103,11 @@
 			mouseX = mouseEvent.offsetX;
 			mouseY = mouseEvent.offsetY;
 		}
+		if (!inSettingsScreen) {
+			checkPosMainMenu();
+		} else {
+			checkPosCreditsScreen();
+		}
 		if (!inCreditsScreen) {
 			checkPosMainMenu();
 		} else {
@@ -122,6 +129,20 @@
 				selectionIconVisible = false;
 			}
 		}
+	}
+
+	function checkPosSettingsScreen() {
+		if(mouseX > settingsBackButtonX && mouseX < settingsBackButtonX + settingsBackButtonWidth){
+				if(mouseY > settingsBackButtonY && mouseY < settingsBackButtonY + settingsBackButtonHeight){
+					selectionIconVisible = true;
+					selectionIconX[0] = settingsBackButtonX - (selectionIconWidth/2) - 2;
+					selectionIconY[0] = settingsBackButtonY + 2;
+					selectionIconX[1] = settingsBackButtonX + creditBackButtonWidth + (selectionIconWidth/2); 
+					selectionIconY[1] = settingsBackButtonY + 2;
+				}
+			}else{
+				selectionIconVisible = false;
+			}
 	}
 
 	function checkPosCreditsScreen() {
@@ -153,9 +174,12 @@
 			case 1:
 				break;
 			case 2:
+			setTimeout(enterSettingsScreen, 1000); break;
 				break;
 			case 3:
-				setTimeout(enterCreditsScreen, 1000); break;
+			setTimeout(enterCreditsScreen, 1000); break;
+			case 4:
+				
 			default:
 				break;
 		}
@@ -164,6 +188,19 @@
 		}
 	}
 
+	function checkClickSettingsScreen(mouseEvent) {
+		if(mouseX > settingsBackButtonX && mouseX < settingsBackButtonX + settingsBackButtonWidth){
+			if(mouseY > settingsBackButtonY && mouseY < settingsBackButtonY + settingsBackButtonHeight){
+				selectionIconVisible = false;
+				fadeId = setInterval("fadeOut()", 1000/frames);
+				clearInterval(timerId);
+				canvas.removeEventListener("mousemove", checkPos);
+				canvas.removeEventListener("mouseup", checkClick);
+				setTimeout(showMainMenu, 1000);
+			}	
+		}
+	}
+	
 	function checkClickCreditsScreen(mouseEvent) {
 		if(mouseX > creditBackButtonX && mouseX < creditBackButtonX + creditBackButtonWidth){
 			if(mouseY > creditBackButtonY && mouseY < creditBackButtonY + creditBackButtonHeight){
@@ -186,7 +223,17 @@
 			time = 0;
 		}
 	}
+	
 
+	function enterSettingsScreen() {
+		clearInterval(fadeId);
+		inSettingsScreen = true;
+		bgImage.src = "Images/Settings Menu 720.png";
+		timerId = setInterval("update()", 1000/frames);
+		canvas.addEventListener("mousemove", checkPos);
+		canvas.addEventListener("mouseup", checkClickSettingsScreen);
+	}
+	
 	function enterCreditsScreen() {
 		clearInterval(fadeId);
 		inCreditsScreen = true;
@@ -195,6 +242,10 @@
 		canvas.addEventListener("mousemove", checkPos);
 		canvas.addEventListener("mouseup", checkClickCreditsScreen);
 	}
+	
+	
+	
+	
 </script> 
 </body>
 
