@@ -1,0 +1,19 @@
+#game{
+	background-color: black;
+	margin: auto;
+	width: 900px;
+	height: 700px;
+	border: 2px solid black;
+	animation: 5s;
+	-webkit-animation: fadein 5s;
+}
+
+
+@keyframes fadein{
+	from { opacity : 0;}
+	to 	 { opacity : 1;}
+}
+@-webkit-keyframes fadein{
+	from { opacity : 0;}
+	to 	 { opacity : 1;}
+}
