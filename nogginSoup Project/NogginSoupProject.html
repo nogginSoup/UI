@@ -27,10 +27,20 @@
 	var buttonWidth = [135,140,118,103, 200];
 	var buttonHeight = [30,30,30,30, 45];
 
+	var settingsBackButtonX = 932;
+	var settingsBackButtonY = 60;
+	var settingsBackButtonWidth = 80;
+	var settingsBackButtonHeight = 70;
+	
 	var creditBackButtonX = 1010;
 	var creditBackButtonY = 645;
 	var creditBackButtonWidth = 120;
 	var creditBackButtonHeight = 45;
+	
+	var pauseBackButtonX = 932;
+	var pauseBackButtonY = 60
+	var pauseBackButtonWidth = 80;
+	var pauseBackButtonHeight = 70;
 	
 	var selectionIconX = [0,0];
 	var selectionIconY = [0,0];
@@ -47,6 +57,7 @@
 	var time = 0.0;
 	var inSettingsScreen = false;
 	var inCreditsScreen = false;
+	var inPauseScreen = false;
 
 	selectionIconImage.src = "Images/Selection Icon.png";
 	bgImage.onload = function(){
@@ -63,6 +74,7 @@
 	function showMainMenu() {
 		inSettingsScreen = false;
 		inCreditsScreen = false;
+		inPauseScreen = false;
 		bgImage.src = "Images/Main Menu 720.png";
 		timerId = setInterval("update()", 1000/frames);
 		canvas.addEventListener("mousemove", checkPos);
@@ -106,12 +118,17 @@
 		if (!inSettingsScreen) {
 			checkPosMainMenu();
 		} else {
-			checkPosCreditsScreen();
+			checkPosSettingsScreen();
 		}
 		if (!inCreditsScreen) {
 			checkPosMainMenu();
 		} else {
 			checkPosCreditsScreen();
+		}
+		if (!inPauseScreen) {
+			checkPosMainMenu();
+		} else {
+			checkPosPauseScreen();
 		}
 	}
 
@@ -158,6 +175,20 @@
 				selectionIconVisible = false;
 			}
 	}
+	
+	function checkPosPauseScreen() {
+		if(mouseX > pauseBackButtonX && mouseX < pauseBackButtonX + pauseBackButtonWidth){
+				if(mouseY > pauseBackButtonY && mouseY < pauseBackButtonY + pauseBackButtonHeight){
+					selectionIconVisible = true;
+					selectionIconX[0] = pauseBackButtonX - (selectionIconWidth/2) - 2;
+					selectionIconY[0] = pauseBackButtonY + 2;
+					selectionIconX[1] = pauseBackButtonX + creditBackButtonWidth + (selectionIconWidth/2); 
+					selectionIconY[1] = pauseBackButtonY + 2;
+				}
+			}else{
+				selectionIconVisible = false;
+			}
+	}
 
 	function checkClick(mouseEvent){
 		for(i = 0; i < buttonX.length; i++){
@@ -179,7 +210,7 @@
 			case 3:
 			setTimeout(enterCreditsScreen, 1000); break;
 			case 4:
-				
+			setTimeout(enterPauseScreen, 1000); break;
 			default:
 				break;
 		}
@@ -204,6 +235,19 @@
 	function checkClickCreditsScreen(mouseEvent) {
 		if(mouseX > creditBackButtonX && mouseX < creditBackButtonX + creditBackButtonWidth){
 			if(mouseY > creditBackButtonY && mouseY < creditBackButtonY + creditBackButtonHeight){
+				selectionIconVisible = false;
+				fadeId = setInterval("fadeOut()", 1000/frames);
+				clearInterval(timerId);
+				canvas.removeEventListener("mousemove", checkPos);
+				canvas.removeEventListener("mouseup", checkClick);
+				setTimeout(showMainMenu, 1000);
+			}	
+		}
+	}
+	
+	function checkClickPauseScreen(mouseEvent) {
+		if(mouseX > pauseBackButtonX && mouseX < pauseBackButtonX + pauseBackButtonWidth){
+			if(mouseY > pauseBackButtonY && mouseY < pauseBackButtonY + pauseBackButtonHeight){
 				selectionIconVisible = false;
 				fadeId = setInterval("fadeOut()", 1000/frames);
 				clearInterval(timerId);
@@ -241,6 +285,15 @@
 		timerId = setInterval("update()", 1000/frames);
 		canvas.addEventListener("mousemove", checkPos);
 		canvas.addEventListener("mouseup", checkClickCreditsScreen);
+	}
+	
+	function enterPauseScreen() {
+		clearInterval(fadeId);
+		inPauseScreen = true;
+		bgImage.src = "Images/Pause 720.png";
+		timerId = setInterval("update()", 1000/frames);
+		canvas.addEventListener("mousemove", checkPos);
+		canvas.addEventListener("mouseup", checkClickPauseScreen);
 	}
 	
 	
