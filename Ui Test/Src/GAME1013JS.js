@@ -40,11 +40,6 @@ gameover.src ="../img/gameover1.png";
 
 window.onload = function(){
 	
-	/*for (var i = 0; i < 25; i++){
-	console.log("fuuuck");
-	console.log(T);
-	T++
-	}*/
 	
 	render();
 	//mounted();
