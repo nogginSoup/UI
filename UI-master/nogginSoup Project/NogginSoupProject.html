@@ -66,7 +66,6 @@
 	var fadeId = 0;
 	var time = 0.0;
 
-	var ScreenType = Object.freeze({"Menu":1, "Setting":2, "Credit":3, "Pause": 4, "CharacterCreation":5, "SkillTree":6, "WorldMap":7, "Missions":8 })
 	var currentScreen = ScreenType.Menu;
 
 	selectionIconImage.src = "Images/Selection Icon.png";
@@ -302,7 +301,14 @@
 	}
 	
 	function checkClickSkillTree(){
-		
+		if(mouseX > worldMapExitButtonX && mouseX < worldMapExitButtonX + worldMapExitButtonWidth){
+			if(mouseY > worldMapExitButtonY && mouseY < worldMapExitButtonY + worldMapExitButtonHeight){
+				selectionIconVisible = false;
+				fadeId = setInterval("fadeOut()", 1000/frames);
+				clearInterval(timerId);
+				canvas.removeEventListener("mousemove", checkPos);
+				canvas.removeEventListener("mouseup", checkClick);
+				setTimeout(showMainMenu, 1000);
 	}
 	
 	function checkClickWorldMap(mouseEvent) {
@@ -367,8 +373,8 @@
 	
 	function enterDebugScreen(){
 		clearInterval(fadeId);
-		currentScreen = ScreenType.CharacterCreation;
-		bgImage.src = "Images/Character Creation Screen 720.png";
+		currentScreen = ScreenType.Debug;
+		bgImage.src = "Images/blank.png";
 		timerId = setInterval("update()", 1000/frames);
 		canvas.addEventListener("keyUp", onKeyUp);
 	}
