@@ -52,6 +52,11 @@
 	var characterCreateWidth = 190;
 	var characterCreateHeight = 50;
 	
+	var worldMapExitButtonX = 1125;
+	var worldMapExitButtonY = 0;
+	var worldMapExitButtonWidth = 75;
+	var worldMapExitButtonHeight = 75;
+	
 	var selectionIconVisible = false;
 	var selectionIconSize = selectionIconWidth;
 	var selectionIconRotate = 0;
@@ -131,6 +136,12 @@
 				break;
 			case ScreenType.Pause:
 				checkPosPauseScreen();
+				break;
+			case ScreenType.SkillTree:
+				checkClickSkillTree();
+				break;
+			case ScreenType.WorldMap:
+				checkClickWorldMap();
 				break;
 			default:
 				checkPosMainMenu();
@@ -289,6 +300,23 @@
 			}	
 		}
 	}
+	
+	function checkClickSkillTree(){
+		
+	}
+	
+	function checkClickWorldMap(mouseEvent) {
+		if(mouseX > worldMapExitButtonX && mouseX < worldMapExitButtonX + worldMapExitButtonWidth){
+			if(mouseY > worldMapExitButtonY && mouseY < worldMapExitButtonY + worldMapExitButtonHeight){
+				selectionIconVisible = false;
+				fadeId = setInterval("fadeOut()", 1000/frames);
+				clearInterval(timerId);
+				canvas.removeEventListener("mousemove", checkPos);
+				canvas.removeEventListener("mouseup", checkClick);
+				setTimeout(showMainMenu, 1000);
+			}	
+		}
+	}
 
 	function fadeOut(){
 		context.fillStyle = "rgba(0,0,0, 0.2)";
@@ -337,7 +365,54 @@
 		canvas.addEventListener("mouseup", checkClickCharacterCreationScreen);
 	}
 	
+	function enterDebugScreen(){
+		clearInterval(fadeId);
+		currentScreen = ScreenType.CharacterCreation;
+		bgImage.src = "Images/Character Creation Screen 720.png";
+		timerId = setInterval("update()", 1000/frames);
+		canvas.addEventListener("keyUp", onKeyUp);
+	}
 	
+	function onKeyUp(event)
+{
+		switch (event.keyCode)
+		{
+			case 37: // 'S' to Enter Skill Tree Screen
+				enterSkillTree(); 
+				break;
+			case 39: // 'W' to Enter World Map
+				enterWorldMap();
+				break;
+			case 38: // 'M' to Enter Missions
+				enterMissionsScreen();
+				break;
+			default: // else
+				selectionIconVisible = false;
+				fadeId = setInterval("fadeOut()", 1000/frames);
+				clearInterval(timerId);
+				canvas.removeEventListener("keyUp", onKeyUp);
+				setTimeout(showMainMenu, 1000);
+				break;
+		}
+}
+	
+	function enterSkillTree(){
+		clearInterval(fadeId);
+		currentScreen = ScreenType.SkillTree;
+		bgImage.src = "Images/SkillTree.png";
+		timerId = setInterval("update()", 1000/frames);
+		canvas.addEventListener("mousemove", checkPos);
+		canvas.addEventListener("mouseup", checkClickSkillTree);
+	}
+	
+	function enterWorldMap() {
+		clearInterval(fadeId);
+		currentScreen = ScreenType.WorldMap;
+		bgImage.src = "Images/wMap1.png";
+		timerId = setInterval("update()", 1000/frames);
+		canvas.addEventListener("mousemove", checkPos);
+		canvas.addEventListener("mouseup", checkClickWorldMap);
+	}
 	
 	
 </script> 
